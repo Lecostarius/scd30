@@ -13,7 +13,7 @@
  */
 
 /*
-  TwoWire.h - TWI/I2C library for Arduino & Wiring
+  SoftWire.h - TWI/I2C library for Arduino & Wiring
   Copyright (c) 2006 Nicholas Zambetti.  All right reserved.
 
   This library is free software; you can redistribute it and/or
@@ -36,14 +36,14 @@
 */
 #if defined(ARDUINO_ARCH_ESP32)
 
-#ifndef TwoWire_h
-#define TwoWire_h
+#ifndef SoftWire_h
+#define SoftWire_h
 
 #include <Stream.h>
 
 #define BUFFER_LENGTH 80
 
-class TwoWire : public Stream
+class SoftWire : public Stream
 {
   private:
     static uint8_t rxBuffer[];
@@ -58,7 +58,7 @@ class TwoWire : public Stream
     static uint8_t transmitting;
 
   public:
-    TwoWire();
+    SoftWire();
     void begin(int sda = 21, int scl = 22);
     //void pins(int sda, int scl) __attribute__((deprecated)); // use begin(sda, scl) in new code
 
@@ -90,9 +90,9 @@ class TwoWire : public Stream
     using Print::write;
 };
 
-#if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)
-extern TwoWire Wire;
+#if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_SOFTWIRE)
+extern SoftWire Wire;
 #endif
 
-#endif // TwoWire_h
+#endif // SoftWire_h
 #endif // ARDUINO_ARCH_ESP32

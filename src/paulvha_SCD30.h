@@ -103,8 +103,9 @@ class SCD30
   public:
         SCD30(void);
 
-        boolean begin(TwoWire &wirePort = Wire, bool m_begin = true); //By default use Wire port
-
+        //boolean begin(TwoWire &wirePort = Wire, bool m_begin = true); //By default use Wire port
+		boolean begin(SoftWire &wirePort, bool m_begin = true); // Leco 
+		
         boolean beginMeasuring(uint16_t pressureOffset);
         boolean beginMeasuring(void);
         boolean StopMeasurement(void);
@@ -158,7 +159,7 @@ class SCD30
         void debug_cmd(uint16_t command);
 
         // Variables
-        TwoWire *_i2cPort; //The generic connection to user's chosen I2C hardware
+        SoftWire *_i2cPort; //The generic connection to user's chosen I2C hardware
 
         // Global main datums
         float co2 = 0;

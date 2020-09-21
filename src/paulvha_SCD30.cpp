@@ -78,7 +78,7 @@ SCD30::SCD30(void)
  * @param wirePort : I2C channel to use
  * @param m_begin  : if true will start measurement every 2 seconds
  */
-boolean SCD30::begin(TwoWire &wirePort, bool m_begin)
+boolean SCD30::begin(SoftWire &wirePort, bool m_begin)
 {
   _i2cPort = &wirePort; //Grab which port the user wants us to use
 

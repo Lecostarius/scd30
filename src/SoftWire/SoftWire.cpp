@@ -59,14 +59,14 @@ extern "C" {
 
 // Initialize Class Variables //////////////////////////////////////////////////
 
-uint8_t TwoWire::rxBuffer[BUFFER_LENGTH];
-uint8_t TwoWire::rxBufferIndex = 0;
-uint8_t TwoWire::rxBufferLength = 0;
-uint8_t TwoWire::txAddress = 0;
-uint8_t TwoWire::txBuffer[BUFFER_LENGTH];
-uint8_t TwoWire::txBufferIndex = 0;
-uint8_t TwoWire::txBufferLength = 0;
-uint8_t TwoWire::transmitting = 0;
+uint8_t SoftWire::rxBuffer[BUFFER_LENGTH];
+uint8_t SoftWire::rxBufferIndex = 0;
+uint8_t SoftWire::rxBufferLength = 0;
+uint8_t SoftWire::txAddress = 0;
+uint8_t SoftWire::txBuffer[BUFFER_LENGTH];
+uint8_t SoftWire::txBufferIndex = 0;
+uint8_t SoftWire::txBufferLength = 0;
+uint8_t SoftWire::transmitting = 0;
 
 // in case of ESP32 SDA 21 / SCL 22
 static int default_sda_pin = SDA;
@@ -74,30 +74,31 @@ static int default_scl_pin = SCL;
 
 // Constructors ////////////////////////////////////////////////////////////////
 
-TwoWire::TwoWire(){}
+SoftWire::SoftWire(){}
 
 // Public Methods //////////////////////////////////////////////////////////////
 
-void TwoWire::begin(int sda, int scl){
+void SoftWire::begin(int sda, int scl){
   default_sda_pin = sda;
   default_scl_pin = scl;
   twi_init(sda, scl);
   flush();
+  Serial.print("SoftWire::begin called, sda, scl are:"); Serial.println(sda); Serial.println(scl);
 }
 
-uint8_t TwoWire::status(){
+uint8_t SoftWire::status(){
     return twi_status();
 }
 
-void TwoWire::setClock(uint32_t frequency){
+void SoftWire::setClock(uint32_t frequency){
   twi_setClock(frequency);
 }
 
-void TwoWire::setClockStretchLimit(uint32_t limit){
+void SoftWire::setClockStretchLimit(uint32_t limit){
   twi_setClockStretchLimit(limit);
 }
 
-size_t TwoWire::requestFrom(uint8_t address, size_t size, bool sendStop){
+size_t SoftWire::requestFrom(uint8_t address, size_t size, bool sendStop){
   if(size > BUFFER_LENGTH)  size = BUFFER_LENGTH;
   size_t read = (twi_readFrom(address, rxBuffer, size, sendStop) == 0)?size:0;
   rxBufferIndex = 0;
@@ -105,33 +106,33 @@ size_t TwoWire::requestFrom(uint8_t address, size_t size, bool sendStop){
   return read;
 }
 
-uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint8_t sendStop){
+uint8_t SoftWire::requestFrom(uint8_t address, uint8_t quantity, uint8_t sendStop){
   return requestFrom(address, static_cast<size_t>(quantity), static_cast<bool>(sendStop));
 }
 
-uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity){
+uint8_t SoftWire::requestFrom(uint8_t address, uint8_t quantity){
   return requestFrom(address, static_cast<size_t>(quantity), true);
 }
 
-uint8_t TwoWire::requestFrom(int address, int quantity){
+uint8_t SoftWire::requestFrom(int address, int quantity){
   return requestFrom(static_cast<uint8_t>(address), static_cast<size_t>(quantity), true);
 }
 
-uint8_t TwoWire::requestFrom(int address, int quantity, int sendStop){
+uint8_t SoftWire::requestFrom(int address, int quantity, int sendStop){
   return requestFrom(static_cast<uint8_t>(address), static_cast<size_t>(quantity), static_cast<bool>(sendStop));
 }
 
-void TwoWire::beginTransmission(uint8_t address){
+void SoftWire::beginTransmission(uint8_t address){
   transmitting = 1;
   txAddress = address;
   flush();
 }
 
-void TwoWire::beginTransmission(int address){
+void SoftWire::beginTransmission(int address){
   beginTransmission((uint8_t)address);
 }
 
-uint8_t TwoWire::endTransmission(uint8_t sendStop){
+uint8_t SoftWire::endTransmission(uint8_t sendStop){
   int8_t ret = twi_writeTo(txAddress, txBuffer, txBufferLength, sendStop);
   txBufferIndex = 0;
   txBufferLength = 0;
@@ -139,11 +140,11 @@ uint8_t TwoWire::endTransmission(uint8_t sendStop){
   return ret;
 }
 
-uint8_t TwoWire::endTransmission(void){
+uint8_t SoftWire::endTransmission(void){
   return endTransmission(true);
 }
 
-size_t TwoWire::write(uint8_t data){
+size_t SoftWire::write(uint8_t data){
   if(transmitting){
     if(txBufferLength >= BUFFER_LENGTH){
       setWriteError();
@@ -158,7 +159,7 @@ size_t TwoWire::write(uint8_t data){
   return 1;
 }
 
-size_t TwoWire::write(const uint8_t *data, size_t quantity){
+size_t SoftWire::write(const uint8_t *data, size_t quantity){
   if(transmitting){
     for(size_t i = 0; i < quantity; ++i){
       if(!write(data[i])) return i;
@@ -169,7 +170,7 @@ size_t TwoWire::write(const uint8_t *data, size_t quantity){
   return quantity;
 }
 
-int TwoWire::available(void){
+int SoftWire::available(void){
   int result = rxBufferLength - rxBufferIndex;
 
   if (!result) {
@@ -181,7 +182,7 @@ int TwoWire::available(void){
   return result;
 }
 
-int TwoWire::read(void){
+int SoftWire::read(void){
   int value = -1;
   if(rxBufferIndex < rxBufferLength){
     value = rxBuffer[rxBufferIndex];
@@ -190,7 +191,7 @@ int TwoWire::read(void){
   return value;
 }
 
-int TwoWire::peek(void){
+int SoftWire::peek(void){
   int value = -1;
   if(rxBufferIndex < rxBufferLength){
     value = rxBuffer[rxBufferIndex];
@@ -198,7 +199,7 @@ int TwoWire::peek(void){
   return value;
 }
 
-void TwoWire::flush(void){
+void SoftWire::flush(void){
   twi_recovery();
   rxBufferIndex = 0;
   rxBufferLength = 0;
@@ -208,8 +209,8 @@ void TwoWire::flush(void){
 
 // Preinstantiate Objects //////////////////////////////////////////////////////
 
-#if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)
-TwoWire Wire;
+#if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_SOFTWIRE)
+//SoftWire Wire;
 #endif
 
 #endif // ARDUINO_ARCH_ESP32
