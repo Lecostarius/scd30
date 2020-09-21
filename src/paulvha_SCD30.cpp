@@ -84,7 +84,10 @@ boolean SCD30::begin(TwoWire &wirePort, bool m_begin)
 
   //We expect caller to begin their I2C port, with the speed of their choice external to the library
   //But if they forget, we start the hardware here.
-  _i2cPort->begin();
+
+  // Lecostarius September 2020: this is actually a bug, if we set different parameters for our wirePort
+  // like other pins or speed, it will be overridden by default values by this call. Commented it.
+  //_i2cPort->begin();
 
   /* paulvha : August 2018
    *
